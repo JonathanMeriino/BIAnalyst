@@ -1,0 +1,115 @@
+
+SELECT * FROM orders LIMIT 10;
+
+-- 1. GMV mensual: total de payments.payment_value por año-mes de order_purchase_timestamp.
+
+SELECT TO_CHAR(o.order_purchase_timestamp, 'YYYY-MM') AS mes, -- COnvierte el timestamp en formato año-mes
+		SUM(p.payment_value) as gmv_mensual  -- Suma el valor total de pagos por mes
+FROM 
+	orders o
+JOIN  -- Une las tablas orders y payments para acceder a la fecha y el valor del pago
+	payments p ON o.order_id = p.order_id
+GROUP BY  -- Agrupa por mes para obtener el GMV mensual
+	TO_CHAR(o.order_purchase_timestamp, 'YYYY-MM')
+ORDER BY -- Ordena cronologicamente
+	mes LIMIT 10;
+
+-- 2. % de pedidos cancelados por mes (order_status = 'canceled').
+
+SELECT 
+    TO_CHAR(order_purchase_timestamp, 'YYYY-MM') AS anio_mes,
+    ROUND(COUNT(*) FILTER (WHERE order_status = 'canceled')::NUMERIC / COUNT(*)::NUMERIC * 100,2) AS porcentaje_cancelados
+FROM 
+    orders
+GROUP BY 
+    TO_CHAR(order_purchase_timestamp, 'YYYY-MM')
+ORDER BY 
+    anio_mes LIMIT 10;
+
+-- 3. Tiempo promedio (en días) entre order_purchase_timestamp y order_delivered_customer_date por mes.
+
+SELECT 
+    TO_CHAR(order_purchase_timestamp, 'YYYY-MM') AS anio_mes,
+    ROUND(   -- EXTRACT (EPOCH FROM ...)/86400 CONVIERTE EL INTERVALO A DIAS COMO NUMERO DECIMAL
+        AVG( EXTRACT (EPOCH FROM order_delivered_customer_date - order_purchase_timestamp)/86400), 
+        2
+    ) AS promedio_dias_entrega
+FROM 
+    orders
+WHERE 
+    order_delivered_customer_date IS NOT NULL
+GROUP BY 
+    TO_CHAR(order_purchase_timestamp, 'YYYY-MM')
+ORDER BY 
+    anio_mes LIMIT 10;
+
+-- 4. Top 10 categorías por GMV (usa order_items unido a products y payments)
+SELECT 
+    pr.product_category_name,
+    ROUND(SUM(p.payment_value), 2) AS gmv_total -- Suma el valro total pagado por cada categoria
+FROM 
+    order_items i
+JOIN  --  Para obtener la categoria del producto
+    products pr ON i.product_id = pr.product_id
+JOIN  -- Para obtenner el valor pagado por cada item
+    payments p ON i.order_id = p.order_id
+GROUP BY -- Agrupa por categoria
+    pr.product_category_name
+ORDER BY -- Ordena de mayor a menor
+    gmv_total DESC
+LIMIT 10; -- Muestra solo las 10 categorias del producto
+
+-- 5. Clientes 'recurrentes': lista customer_id con más de 1 orden y su número de órdenes.
+
+SELECT 
+	customer_id , 
+	COUNT(*) AS numero_ordenes  -- Cuenta cuantas ordenes tiene cada cliente
+FROM 
+	orders
+GROUP BY
+	customer_id
+HAVING  -- Filtra solo los clientes con mas de una orden
+	COUNT(*) > 1
+ORDER BY
+	numero_ordenes;
+-- 6. Vendedores con ticket promedio (sum(price)/#órdenes) más alto y al menos 50 ítems vendidos.
+
+SELECT
+	seller_id,
+	COUNT(*) AS total_items_vendidos, -- Cuenta el total de items vendidos por vendedor
+	COUNT(DISTINCT order_id) AS total_ordenes, -- Cuenta el numero de ordenes unicas por vendedor
+	-- SUMA EL VALOR TOTAL DE LOS ITEMS VENTIDOS / CALCULA EL TICKET PROMEDIO POR ORDEN
+	ROUND (SUM(price)/ COUNT(DISTINCT order_id),2) AS ticket_promedio 
+FROM 
+    order_items
+GROUP BY 
+    seller_id
+HAVING -- Filtra solo los vendedores con al menos 50 items vendidos
+    COUNT(*) >= 50
+ORDER BY 
+    ticket_promedio DESC;
+	
+-- 7 Ranking de ciudades por GMV y top 3 por estado (usa una ventana PARTITION BY customer_state).
+WITH ranking_ciudades AS ( -- Crea  una tabla temporal con estado, ciudad gmv total y rankind por estado
+    SELECT 
+        c.customer_state,
+        c.customer_city,
+        ROUND(SUM(p.payment_value), 2) AS gmv_total,
+        RANK() OVER ( -- Asigna un numero de ranking  a cada ciudad dentro de su estado
+            PARTITION BY c.customer_state 
+            ORDER BY SUM(p.payment_value) DESC
+        ) AS ranking_estado
+    FROM 
+        orders o
+    JOIN 
+        payments p ON o.order_id = p.order_id
+    JOIN 
+        customers c ON o.customer_id = c.customer_id
+    GROUP BY  -- Agrupa los pagos por ciudad y estado para calcular el GMV total
+        c.customer_state, c.customer_city
+)
+SELECT *
+FROM ranking_ciudades
+WHERE ranking_estado <= 3 --  Filtra solo las ciudades quye estan en el top 3 de su estado
+ORDER BY customer_state, ranking_estado; 
+
