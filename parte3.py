@@ -60,3 +60,50 @@ gmv_mensual = gmv_mensual.rename(columns={'GMV_orden': 'GMV_Mensual_Total'})
 
 print("GMV Total Mensual",gmv_mensual.head(10),sep="\n")
 
+# %%
+
+def limpiar_fechas(df):
+    """
+    Limpia el DataFrame eliminando registros con fechas de entrega imposibles 
+    (donde la fecha de entrega al cliente es anterior a la fecha de compra).
+
+    Args:
+        df (pd.DataFrame): El DataFrame que contiene las columnas de fechas.
+
+    Returns:
+        pd.DataFrame: El DataFrame limpio sin registros con errores de fecha.
+    """
+    
+    # Asegurarse de que las columnas de fecha son de tipo datetime. 
+    # Esto es crucial para la comparación.
+    # Se asume que las columnas ya fueron convertidas previamente.
+    
+    # 1. Definir la condición de registros válidos: 
+    #    La fecha de entrega debe ser MAYOR o IGUAL a la fecha de compra.
+    #    También manejamos NaT (Not a Time/Fecha Nula) comparando solo si NO son nulos.
+    
+    condicion_valida = (
+        df['order_delivered_customer_date'] >= df['order_purchase_timestamp']
+    )
+    
+    # 2. Manejar casos con fechas nulas: 
+    #    Es importante retener las filas donde 'order_delivered_customer_date' es NaT, 
+    #    ya que esto típicamente significa que el pedido aún no ha sido entregado
+    #    (y no representa una imposibilidad lógica de tiempo).
+    condicion_nat = df['order_delivered_customer_date'].isna()
+    
+    # 3. Aplicar el filtro: Mantiene las filas que cumplen la condición válida O 
+    #    donde la fecha de entrega es nula.
+    df_limpio = df[condicion_valida | condicion_nat].copy()
+
+    # Opcional: Imprimir métricas de limpieza
+    registros_eliminados = len(df) - len(df_limpio)
+    if registros_eliminados > 0:
+        print(f"🗑️ Se eliminaron {registros_eliminados} registros ({(registros_eliminados/len(df))*100:.2f}%) con fechas de entrega imposibles.")
+    else:
+        print("✅ No se encontraron registros con fechas imposibles.")
+        
+    return df_limpio
+
+# Ejemplo de uso (Asumiendo que 'df' es tu DataFrame principal):
+# df_filtrado = limpiar_fechas(df)
