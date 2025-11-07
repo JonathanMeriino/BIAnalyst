@@ -70,3 +70,5 @@ CREATE TABLE sellers (
 	seller_city VARCHAR(100),	
 	seller_state VARCHAR (2)
 );
+
+SELECT * FROM customers LIMIT 10;
