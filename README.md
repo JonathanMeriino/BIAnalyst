@@ -49,9 +49,31 @@ Pasos:
 -Hubo un total de 625 pedidos cancelados, siendo la fecha 2018-02 con el mayor numero de cancelados (81)
 - La categoria con mayor GMV es "cama_mesa_banho" con $1712553.67
 - La fecha 2017-11 es la que tuvo el mayor numero de ordenes con 7544
-- El tiempo de entrega promedio es de 12.5 dias 
+- El tiempo de entrega promedio es de 12.5 dias
+- SP es la ciudad con el mayor numero de GMV
 ### SQL
 - Herrammientas utilizadas: PostgreSQL , pgAdmin
+1.	GMV mensual: total de payments.payment_value por año-mes de order_purchase_timestamp.
+
+
+2.	% de pedidos cancelados por mes (order_status = 'canceled').
+
+
+3.	Tiempo promedio (en días) entre order_purchase_timestamp y order_delivered_customer_date por mes.
+
+
+4.	Top 10 categorías por GMV (usa order_items unido a products y payments).
+
+
+5.	Clientes 'recurrentes': lista customer_id con más de 1 orden y su número de órdenes.
+
+
+6.	Vendedores con ticket promedio (sum(price)/#órdenes) más alto y al menos 50 ítems vendidos.
+
+
+7.	Ranking de ciudades por GMV y top 3 por estado (usa una ventana PARTITION BY customer_state).
+
+
 
 ### Python
 -Herramientas utilizadas: Spyder IDE , Python 3.13 ( Pandas)
