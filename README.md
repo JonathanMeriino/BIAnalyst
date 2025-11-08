@@ -111,3 +111,14 @@ Pasos:
 
 ### Python
 -Herramientas utilizadas: Spyder IDE , Python 3.13 ( Pandas)
+
+Explica brevemente (2–3 líneas) la diferencia entre inner join y left join y un ejemplo de uso en pandas.merge.
+
+-Inner join (how=’inner’) →  Incluye las filas que tienen coincidencia en ambos dataframes y no  genera valores faltantes en las columnas de la clave de union.
+
+-left join (how=”left”)→ Incluye todas las filas del dataframe de la izquierda y solo las filas coincidentes del dataframe de la derecha. Respecto a los valores faltantes, los genera en las columnas del dataframe derecho cuando no hay coincidencias.
+
+Ejemplo de uso: 
+
+Unir SOLO las filas que tienen un 'order_id' en AMBOS DataFrames df_inner = pd.merge( left=df_pedidos, right=df_reviews, on='order_id', how='inner' )
+Unir TODAS las filas de df_pedidos, agregando la información de la reseña df_left = pd.merge( left=df_pedidos, right=df_reviews, on='order_id', how='left' )
