@@ -44,7 +44,12 @@ Pasos:
 2. Seleccionar order_item como tabla principal, products como secundaria,   relacion product_id , tipo de combinacion interna y aceptar
 3. Expande solo "product_category_name"
 
+### Insights
 
+-Hubo un total de 625 pedidos cancelados, siendo la fecha 2018-02 con el mayor numero de cancelados (81)
+- La categoria con mayor GMV es "cama_mesa_banho" con $1712553.67
+- La fecha 2017-11 es la que tuvo el mayor numero de ordenes con 7544
+- El tiempo de entrega promedio es de 12.5 dias 
 ### SQL
 - Herrammientas utilizadas: PostgreSQL , pgAdmin
 
