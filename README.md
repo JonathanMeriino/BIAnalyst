@@ -19,7 +19,9 @@ Link del proyecto Github: https://github.com/JonathanMeriino/BIAnalyst
 - reseñas (review_id, order_id, review_score)
 - geolocalización (geolocation_zip_code_prefix, geolocation_lat, geolocation_lng, geolocation_city, geolocation_state)
 
-![Distribución de estilos de juego](images/Inscripcion2025-2.png)
+![Modelo de datos](images/modelo.jpg)
+
+
 Relaciones: 
 
 -Orders se conecta con customers, order_items, payments, reviews
@@ -73,6 +75,7 @@ Pasos:
 - El tiempo de entrega promedio es de 12.5 dias
 - SP es la ciudad con el mayor numero de GMV
 
+![Dashboard](images/dashboard.jpg)
 
 
 ### SQL
