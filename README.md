@@ -7,6 +7,24 @@ https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce?select=olist_custome
 ## Power BI
 -Modelado de datos
 
+- clientes (customer_id, customer_unique_id, customer_city, customer_state)
+- ordenes (order_id, customer_id, order_status, order_purchase_timestamp, order_delivered_customer_date)
+- items_pedido (order_id, product_id, seller_id, price, freight_value)
+- pagos (order_id, payment_type, payment_value)
+- productos (product_id, product_category_name)
+- vendedores (seller_id, seller_city, seller_state)
+- reseñas (review_id, order_id, review_score)
+- geolocalización (geolocation_zip_code_prefix, geolocation_lat, geolocation_lng, geolocation_city, geolocation_state)
+
+![Distribución de estilos de juego](images/Inscripcion2025-2.png)
+Relaciones: 
+
+-Orders se conecta con customers, order_items, payments, reviews
+-Order_items conecta con products y sellers
+-Customers y sellers pueden vincularse con geolocation por zip_code_prefix
+
+
+
 -GMV (ingresos brutos) por mes
 Pasos:
 1. Abrir power query
@@ -51,29 +69,33 @@ Pasos:
 - La fecha 2017-11 es la que tuvo el mayor numero de ordenes con 7544
 - El tiempo de entrega promedio es de 12.5 dias
 - SP es la ciudad con el mayor numero de GMV
+
+
+
 ### SQL
 - Herrammientas utilizadas: PostgreSQL , pgAdmin
 1.	GMV mensual: total de payments.payment_value por año-mes de order_purchase_timestamp.
 
-
+![GMV mensual](images/SQL1.png)
 2.	% de pedidos cancelados por mes (order_status = 'canceled').
 
-
+![% pedidos cancelados ](images/SQL2.png)
 3.	Tiempo promedio (en días) entre order_purchase_timestamp y order_delivered_customer_date por mes.
 
-
+![Tiempo promedio en dias ](images/SQL3.png)
 4.	Top 10 categorías por GMV (usa order_items unido a products y payments).
 
+![Top 10 categorias ](images/SQL4.png)
 
 5.	Clientes 'recurrentes': lista customer_id con más de 1 orden y su número de órdenes.
-
+Clientes recurrentes ](images/SQL5.png)
 
 6.	Vendedores con ticket promedio (sum(price)/#órdenes) más alto y al menos 50 ítems vendidos.
 
-
+![Vendedores con ticket promedio ](images/SQL6.png)
 7.	Ranking de ciudades por GMV y top 3 por estado (usa una ventana PARTITION BY customer_state).
 
-
+![Raning ](images/SQL7.png)
 
 ### Python
 -Herramientas utilizadas: Spyder IDE , Python 3.13 ( Pandas)
