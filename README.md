@@ -4,6 +4,9 @@ Olist es una plataforma que ofrece soluciones para la gestión y crecimiento de 
 
 El dataset utilizado en este proyecto Brazilian E-Commerce Public Dataset by Olist 
 https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce?select=olist_customers_dataset.csv 
+
+Link del proyecto Github: https://github.com/JonathanMeriino/BIAnalyst
+
 ## Power BI
 -Modelado de datos
 
@@ -77,22 +80,28 @@ Pasos:
 1.	GMV mensual: total de payments.payment_value por año-mes de order_purchase_timestamp.
 
 ![GMV mensual](images/SQL1.png)
+
 2.	% de pedidos cancelados por mes (order_status = 'canceled').
 
 ![% pedidos cancelados ](images/SQL2.png)
+
 3.	Tiempo promedio (en días) entre order_purchase_timestamp y order_delivered_customer_date por mes.
 
 ![Tiempo promedio en dias ](images/SQL3.png)
+
 4.	Top 10 categorías por GMV (usa order_items unido a products y payments).
 
 ![Top 10 categorias ](images/SQL4.png)
 
 5.	Clientes 'recurrentes': lista customer_id con más de 1 orden y su número de órdenes.
-Clientes recurrentes ](images/SQL5.png)
+
+
+![Clientes recurrentes ](images/SQL5.png)
 
 6.	Vendedores con ticket promedio (sum(price)/#órdenes) más alto y al menos 50 ítems vendidos.
 
 ![Vendedores con ticket promedio ](images/SQL6.png)
+
 7.	Ranking de ciudades por GMV y top 3 por estado (usa una ventana PARTITION BY customer_state).
 
 ![Raning ](images/SQL7.png)
